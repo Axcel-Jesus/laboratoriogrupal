@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reloj - Sistema Académico</title>
+    <link rel="stylesheet" href="css/styles.css"> 
+</head>
+<body>
+    <header class="header-content" id="session-header" style="background: #1d4ed8; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+        <!-- Aquí se inyectará por JS si hay sesión o no -->
+        <span>Verificando sesión...</span>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h1>Hora Actual</h1>
+            <div id="clock" style="font-size: 3rem; text-align: center; font-weight: bold; margin: 20px 0; color: #2563eb;">
+                00:00:00
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Lógica del Reloj
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Lógica de Sesión: Consultamos la API protegida del perfil[cite: 4]
+        async function checkSession() {
+            const header = document.getElementById('session-header');
+            try {
+                const response = await fetch('/api/perfil');
+                
+                // Si la respuesta es 401 Unauthorized, no hay sesión activa[cite: 4]
+                if (response.status === 401) {
+                    header.innerHTML = `
+                        <span>No hay sesión activa</span>
+                        <div>
+                            <a href="login.html" style="color: white; margin-right: 15px; font-weight: bold;">Iniciar Sesión</a>
+                            <a href="register.html" style="color: white; font-weight: bold;">Registrarse</a>
+                        </div>
+                    `;
+                } else if (response.ok) {
+                    const data = await response.json();
+                    header.innerHTML = `
+                        <span>Bienvenido, <strong>${data.data.nombres} ${data.data.apellidos}</strong></span>
+                        <button onclick="logout()" style="width: auto; padding: 5px 15px; font-size: 14px; background: white; color: #1d4ed8;">Cerrar sesión</button>
+                    `;
+                }
+            } catch (error) {
+                console.error("Error al verificar la sesión");
+            }
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.reload(); // Recargar para mostrar "No hay sesión"
+        }
+
+        checkSession();
+    </script>
+</body>
+</html>
