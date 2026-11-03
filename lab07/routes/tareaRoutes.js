@@ -3,7 +3,7 @@ const router = express.Router();
 const tareaController = require('../controllers/tareaController');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// Aplicamos el middleware de autenticación a TODAS las rutas de tareas
+// Protegemos todas las rutas de tareas
 router.use(authMiddleware.requireAuth);
 
 router.get('/', tareaController.getTareas);
