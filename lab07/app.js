@@ -1,32 +1,38 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+
+// Importar rutas
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const tareaRoutes = require('./routes/tareaRoutes'); // NUEVA RUTA
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
-// Permitir a Express recibir datos en formato JSON y formularios
+// Middlewares base
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configurar express-session para mantener a los usuarios logueados
+// Configurar sesiones
 app.use(
     session({
         secret: SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            httpOnly: true // Medida de seguridad vital para proteger la cookie
+            httpOnly: true
         }
     })
 );
 
-// Servir archivos estáticos del frontend (HTML, CSS, JS)
+// Servir frontend
 app.use(express.static('public'));
+
+// Rutas de la API
 app.use('/api/auth', authRoutes);
+app.use('/api/tareas', tareaRoutes); // Nueva ruta para el To-Do List
 app.use('/api', userRoutes);
 
 // Levantar el servidor
