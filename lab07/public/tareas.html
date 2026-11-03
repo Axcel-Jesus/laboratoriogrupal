@@ -1,1 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Pomodoro & To-Do</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .pomodoro { text-align: center; margin: 20px 0; padding: 20px; background: #e0e7ff; border-radius: 10px; }
+        #timer { font-size: 3rem; font-weight: bold; color: #1d4ed8; }
+        .tarea-item { display: flex; justify-content: space-between; background: #f8fafc; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #cbd5e1; }
+        .completada { text-decoration: line-through; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <header class="header-content">
+        <h2>Mi Espacio de Trabajo</h2>
+        <button id="btnLogout" class="logout">Cerrar sesión</button>
+    </header>
 
+    <main class="container">
+        <!-- POMODORO -->
+        <section class="card pomodoro">
+            <h2>Temporizador Pomodoro</h2>
+            <div id="timer">25:00</div>
+            <button id="btnStart" style="width: auto; margin-top: 10px;">Iniciar / Pausar</button>
+        </section>
+
+        <!-- TO-DO LIST -->
+        <section class="card">
+            <h2>Mis Tareas</h2>
+            <form id="formTarea" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="titulo" placeholder="Nueva tarea..." required style="flex: 1;">
+                <button type="submit">Agregar</button>
+            </form>
+            <div id="listaTareas">
+                <!-- Aquí se inyectarán las tareas desde JS -->
+                <p>Cargando tareas...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/tareas.js"></script>
+</body>
+</html>
