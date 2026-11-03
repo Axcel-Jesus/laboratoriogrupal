@@ -1,6 +1,6 @@
 const db = require('../db');
 
-// 1. Obtener todas las tareas del usuario logueado
+// 1. Obtener tareas
 exports.getTareas = async (req, res) => {
     try {
         const result = await db.query(
@@ -14,7 +14,7 @@ exports.getTareas = async (req, res) => {
     }
 };
 
-// 2. Crear una nueva tarea
+// 2. Crear tarea
 exports.createTarea = async (req, res) => {
     try {
         const { titulo, descripcion } = req.body;
@@ -22,7 +22,7 @@ exports.createTarea = async (req, res) => {
 
         const result = await db.query(
             'INSERT INTO tareas (usuario_id, titulo, descripcion) VALUES ($1, $2, $3) RETURNING *',
-            [req.session.userId, titulo, descripcion]
+            [req.session.userId, titulo, descripcion || '']
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -31,7 +31,7 @@ exports.createTarea = async (req, res) => {
     }
 };
 
-// 3. Actualizar tarea (ej. marcar como completada)
+// 3. Actualizar tarea
 exports.updateTarea = async (req, res) => {
     try {
         const { id } = req.params;
