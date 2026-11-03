@@ -2,40 +2,34 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 
-// Importar rutas
+// IMPORTACIONES
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const tareaRoutes = require('./routes/tareaRoutes'); // NUEVA RUTA
+const tareaRoutes = require('./routes/tareaRoutes'); // <-- DEBE ESTAR
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
-// Middlewares base
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configurar sesiones
 app.use(
     session({
         secret: SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        cookie: {
-            httpOnly: true
-        }
+        cookie: { httpOnly: true }
     })
 );
 
-// Servir frontend
 app.use(express.static('public'));
 
-// Rutas de la API
+// RUTAS
 app.use('/api/auth', authRoutes);
-app.use('/api/tareas', tareaRoutes); // Nueva ruta para el To-Do List
+app.use('/api/tareas', tareaRoutes); // <-- DEBE ESTAR
 app.use('/api', userRoutes);
 
-// Levantar el servidor
 app.listen(PORT, () => {
     console.log(`Servidor Express ejecutándose en el puerto ${PORT}`);
 });
