@@ -1,4 +1,4 @@
-// Lógica del Pomodoro (Básica)
+// --- LÓGICA DEL POMODORO ---
 let tiempo = 25 * 60;
 let timerInterval = null;
 let corriendo = false;
@@ -18,16 +18,22 @@ document.getElementById('btnStart').addEventListener('click', () => {
     corriendo = !corriendo;
 });
 
-// Lógica del To-Do List (Fetch API)
+// --- LÓGICA DEL TO-DO LIST ---
 const formTarea = document.getElementById('formTarea');
 const listaTareas = document.getElementById('listaTareas');
 
 async function cargarTareas() {
     try {
         const response = await fetch('/api/tareas', { credentials: 'same-origin' });
-        if (response.status === 401) return window.location.href = 'login.html'; // Si no hay sesión
+        
+        if (response.status === 401) {
+            console.warn("No hay sesión activa. Redirigiendo...");
+            return window.location.href = 'login.html';
+        }
 
         const tareas = await response.json();
+        console.log("Tareas recibidas del servidor:", tareas);
+        
         listaTareas.innerHTML = '';
 
         if (tareas.length === 0) {
@@ -41,62 +47,67 @@ async function cargarTareas() {
             div.innerHTML = `
                 <span class="${tarea.completada ? 'completada' : ''}">${tarea.titulo}</span>
                 <div>
-                    <button onclick="completarTarea(${tarea.id}, ${tarea.completada})" style="width:auto; padding: 5px 10px; margin-right:5px; background: ${tarea.completada ? '#64748b' : '#10b981'}">
+                    <button class="btn-accion btn-completar" onclick="completarTarea(${tarea.id}, '${tarea.titulo}', ${tarea.completada})">
                         ${tarea.completada ? 'Deshacer' : 'Completar'}
                     </button>
-                    <button onclick="eliminarTarea(${tarea.id})" style="width:auto; padding: 5px 10px; background: #ef4444;">X</button>
+                    <button class="btn-accion btn-eliminar" onclick="eliminarTarea(${tarea.id})">X</button>
                 </div>
             `;
             listaTareas.appendChild(div);
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error al cargar tareas:", error);
+        listaTareas.innerHTML = '<p>Error al conectar con el servidor.</p>';
     }
 }
 
-// Crear tarea (POST)
 formTarea.addEventListener('submit', async (e) => {
     e.preventDefault();
     const titulo = document.getElementById('titulo').value;
-    
-    await fetch('/api/tareas', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ titulo, descripcion: '' })
-    });
-    
-    document.getElementById('titulo').value = '';
-    cargarTareas(); // Recargar la lista sin refrescar la página
+    console.log("Enviando tarea:", titulo);
+
+    try {
+        const response = await fetch('/api/tareas', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titulo, descripcion: '' })
+        });
+        
+        const data = await response.json();
+        console.log("Respuesta del servidor al crear:", data);
+
+        if (response.ok) {
+            document.getElementById('titulo').value = '';
+            cargarTareas();
+        } else {
+            alert("Error al guardar: " + data.message);
+        }
+    } catch (error) {
+        console.error("Error en el fetch:", error);
+    }
 });
 
-// Actualizar tarea (PUT)
-async function completarTarea(id, estadoActual) {
-    const tareaActual = { titulo: "Tarea", completada: !estadoActual }; // Simplificado para el ejemplo
-    // En un caso real, deberías buscar el título original
-    const tituloElem = event.target.parentElement.parentElement.querySelector('span').textContent;
-    
+async function completarTarea(id, titulo, estadoActual) {
     await fetch(`/api/tareas/${id}`, {
         method: 'PUT',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ titulo: tituloElem, descripcion: '', completada: !estadoActual })
+        body: JSON.stringify({ titulo: titulo, descripcion: '', completada: !estadoActual })
     });
     cargarTareas();
 }
 
-// Eliminar tarea (DELETE)
 async function eliminarTarea(id) {
     if (!confirm('¿Seguro que deseas eliminar esta tarea?')) return;
     await fetch(`/api/tareas/${id}`, { method: 'DELETE', credentials: 'same-origin' });
     cargarTareas();
 }
 
-// Logout
 document.getElementById('btnLogout').addEventListener('click', async () => {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
     window.location.href = 'login.html';
 });
 
-// Cargar tareas al iniciar
+// Cargar al iniciar
 cargarTareas();
