@@ -4,47 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Pomodoro & To-Do</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <!-- ELIMINAMOS EL LINK A styles.css PARA QUE NO ROMPA EL DISEÑO -->
     <style>
-        /* Estilos base para la página */
-        body { font-family: Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 20px; }
-        .header { background: #1d4ed8; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .pomodoro { text-align: center; background: #e0e7ff; }
-        #timer { font-size: 4rem; font-weight: bold; color: #1d4ed8; margin: 10px 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
+        .header { background: #1d4ed8; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .header h2 { margin: 0; }
+        .header button { background: white; color: #1d4ed8; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; width: auto; }
         
-        /* Estilos de las tareas */
-        .tarea-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        .tarea-item span { flex: 1; font-size: 16px; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card h2 { margin-top: 0; }
+        
+        .pomodoro { text-align: center; background: #e0e7ff; border: 1px solid #c7d2fe; }
+        #timer { font-size: 4rem; font-weight: bold; color: #1d4ed8; margin: 15px 0; }
+        #btnStart { padding: 12px 25px; background: #1d4ed8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; }
+        
+        /* ESTILOS FORZADOS PARA EL FORMULARIO */
+        .formulario-tarea { display: flex; gap: 15px; margin-bottom: 20px; width: 100%; }
+        .formulario-tarea input { 
+            flex: 1; 
+            padding: 12px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            font-size: 1rem; 
+            width: 100%; 
+            box-sizing: border-box;
+        }
+        .formulario-tarea button { 
+            padding: 12px 25px; 
+            background: #2563eb; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 1rem;
+            width: auto;
+        }
+        
+        /* ESTILOS DE LA LISTA */
+        .tarea-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        .tarea-item span { font-size: 1.1rem; }
         .completada { text-decoration: line-through; color: #94a3b8; }
         
-        /* Clases para botones de acción (Completar / Eliminar) */
-        .btn-accion { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; margin-left: 5px; color: white; font-weight: bold; width: auto !important; }
+        .btn-accion { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; margin-left: 8px; color: white; font-weight: bold; }
         .btn-completar { background: #10b981; }
         .btn-eliminar { background: #ef4444; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h2>Mi Espacio de Trabajo</h2>
-            <button id="btnLogout" style="background: white; color: #1d4ed8; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; width: auto !important;">Cerrar sesión</button>
-        </header>
+    <header class="header">
+        <h2>Mi Espacio de Trabajo</h2>
+        <button id="btnLogout">Cerrar sesión</button>
+    </header>
 
+    <div class="container">
         <section class="card pomodoro">
             <h2>Temporizador Pomodoro</h2>
             <div id="timer">25:00</div>
-            <button id="btnStart" style="padding: 10px 20px; background: #1d4ed8; color: white; border: none; border-radius: 5px; cursor: pointer; width: auto !important;">Iniciar / Pausar</button>
+            <button id="btnStart">Iniciar / Pausar</button>
         </section>
 
         <section class="card">
             <h2>Mis Tareas</h2>
             
-            <!-- FORMULARIO CON ESTILOS EN LÍNEA FORZADOS -->
-            <form id="formTarea" style="display: flex; gap: 10px; margin-bottom: 20px; width: 100%;">
-                <input type="text" id="titulo" placeholder="Escribe una nueva tarea..." required style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; width: auto; margin: 0;">
-                <button type="submit" style="padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: auto !important; margin: 0;">Agregar</button>
+            <form id="formTarea" class="formulario-tarea">
+                <input type="text" id="titulo" placeholder="Escribe una nueva tarea..." required>
+                <button type="submit">Agregar</button>
             </form>
             
             <div id="listaTareas">
