@@ -1,4 +1,6 @@
-// --- LÓGICA DEL POMODORO ---
+console.log("tareas.js cargado");
+
+// Pomodoro
 let tiempo = 25 * 60;
 let timerInterval = null;
 let corriendo = false;
@@ -18,7 +20,7 @@ document.getElementById('btnStart').addEventListener('click', () => {
     corriendo = !corriendo;
 });
 
-// --- LÓGICA DEL TO-DO LIST ---
+// To-Do List
 const formTarea = document.getElementById('formTarea');
 const listaTareas = document.getElementById('listaTareas');
 
@@ -27,13 +29,14 @@ async function cargarTareas() {
         const response = await fetch('/api/tareas', { credentials: 'same-origin' });
         
         if (response.status === 401) {
-            console.warn("No hay sesión activa. Redirigiendo...");
             return window.location.href = 'login.html';
         }
 
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status}`);
+        }
+
         const tareas = await response.json();
-        console.log("Tareas recibidas del servidor:", tareas);
-        
         listaTareas.innerHTML = '';
 
         if (tareas.length === 0) {
@@ -44,6 +47,7 @@ async function cargarTareas() {
         tareas.forEach(tarea => {
             const div = document.createElement('div');
             div.className = 'tarea-item';
+            // Arreglamos el CSS del input y botones
             div.innerHTML = `
                 <span class="${tarea.completada ? 'completada' : ''}">${tarea.titulo}</span>
                 <div>
@@ -56,35 +60,29 @@ async function cargarTareas() {
             listaTareas.appendChild(div);
         });
     } catch (error) {
-        console.error("Error al cargar tareas:", error);
-        listaTareas.innerHTML = '<p>Error al conectar con el servidor.</p>';
+        console.error("Error:", error);
+        listaTareas.innerHTML = `<p class="error-msg">Error al cargar: ${error.message}</p>`;
     }
 }
 
 formTarea.addEventListener('submit', async (e) => {
     e.preventDefault();
     const titulo = document.getElementById('titulo').value;
-    console.log("Enviando tarea:", titulo);
 
     try {
         const response = await fetch('/api/tareas', {
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ titulo, descripcion: '' })
+            body: JSON.stringify({ titulo: titulo, descripcion: '' })
         });
         
-        const data = await response.json();
-        console.log("Respuesta del servidor al crear:", data);
-
-        if (response.ok) {
-            document.getElementById('titulo').value = '';
-            cargarTareas();
-        } else {
-            alert("Error al guardar: " + data.message);
-        }
+        if (!response.ok) throw new Error("No se pudo crear");
+        
+        document.getElementById('titulo').value = '';
+        cargarTareas();
     } catch (error) {
-        console.error("Error en el fetch:", error);
+        alert("Error al guardar la tarea");
     }
 });
 
@@ -109,5 +107,4 @@ document.getElementById('btnLogout').addEventListener('click', async () => {
     window.location.href = 'login.html';
 });
 
-// Cargar al iniciar
 cargarTareas();
