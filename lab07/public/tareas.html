@@ -6,39 +6,48 @@
     <title>Mi Pomodoro & To-Do</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        .pomodoro { text-align: center; margin: 20px 0; padding: 20px; background: #e0e7ff; border-radius: 10px; }
-        #timer { font-size: 3rem; font-weight: bold; color: #1d4ed8; }
-        .tarea-item { display: flex; justify-content: space-between; background: #f8fafc; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #cbd5e1; }
+        /* Estilos específicos para que no falle */
+        body { font-family: Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 20px; }
+        .header { background: #1d4ed8; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .pomodoro { text-align: center; background: #e0e7ff; }
+        #timer { font-size: 4rem; font-weight: bold; color: #1d4ed8; margin: 10px 0; }
+        .form-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .form-group input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 16px; }
+        .form-group button { padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .tarea-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .tarea-item span { flex: 1; font-size: 16px; }
         .completada { text-decoration: line-through; color: #94a3b8; }
+        .btn-accion { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; margin-left: 5px; color: white; }
+        .btn-completar { background: #10b981; }
+        .btn-eliminar { background: #ef4444; }
     </style>
 </head>
 <body>
-    <header class="header-content">
-        <h2>Mi Espacio de Trabajo</h2>
-        <button id="btnLogout" class="logout">Cerrar sesión</button>
-    </header>
+    <div class="container">
+        <header class="header">
+            <h2>Mi Espacio de Trabajo</h2>
+            <button id="btnLogout" style="background: white; color: #1d4ed8; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Cerrar sesión</button>
+        </header>
 
-    <main class="container">
-        <!-- POMODORO -->
         <section class="card pomodoro">
             <h2>Temporizador Pomodoro</h2>
             <div id="timer">25:00</div>
-            <button id="btnStart" style="width: auto; margin-top: 10px;">Iniciar / Pausar</button>
+            <button id="btnStart" style="padding: 10px 20px; background: #1d4ed8; color: white; border: none; border-radius: 5px; cursor: pointer;">Iniciar / Pausar</button>
         </section>
 
-        <!-- TO-DO LIST -->
         <section class="card">
             <h2>Mis Tareas</h2>
-            <form id="formTarea" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="titulo" placeholder="Nueva tarea..." required style="flex: 1;">
+            <form id="formTarea" class="form-group">
+                <input type="text" id="titulo" placeholder="Escribe una nueva tarea..." required>
                 <button type="submit">Agregar</button>
             </form>
             <div id="listaTareas">
-                <!-- Aquí se inyectarán las tareas desde JS -->
                 <p>Cargando tareas...</p>
             </div>
         </section>
-    </main>
+    </div>
 
     <script src="js/tareas.js"></script>
 </body>
