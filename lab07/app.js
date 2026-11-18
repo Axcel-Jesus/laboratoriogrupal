@@ -1,33 +1,48 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-// const authRoutes = require('./routes/authRoutes'); // Lo descomentaremos cuando armemos las rutas
-// const userRoutes = require('./routes/userRoutes');
+
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
-// Permitir a Express recibir datos en formato JSON y formularios
+if (!SESSION_SECRET) {
+    console.error('Falta SESSION_SECRET en .env');
+    process.exit(1);
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configurar express-session para mantener a los usuarios logueados
 app.use(
     session({
         secret: SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            httpOnly: true // Medida de seguridad vital para proteger la cookie
+            httpOnly: true,
+            sameSite: 'lax'
         }
     })
 );
 
-// Servir archivos estáticos del frontend (HTML, CSS, JS)
-// app.use(express.static('public')); 
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 
-// Levantar el servidor
+app.use(express.static('public'));
+
+app.use('/api/auth', authRoutes);
+app.use('/api', userRoutes);
+
+app.get('/', (req, res) => {
+    res.redirect('/login.html');
+});
+
 app.listen(PORT, () => {
-    console.log(`Servidor Express ejecutándose en el puerto ${PORT}`);
+    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
