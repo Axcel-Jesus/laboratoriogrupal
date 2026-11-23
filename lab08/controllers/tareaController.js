@@ -66,3 +66,32 @@ exports.deleteTarea = async (req, res) => {
         res.status(500).json({ error: 'Error al eliminar tarea' });
     }
 };
+
+// 5. Obtener estadísticas para el Dashboard (NUEVA FUNCIÓN)
+exports.getEstadisticas = async (req, res) => {
+    try {
+        // Total de tareas
+        const totalRes = await db.query('SELECT COUNT(*) FROM tareas WHERE usuario_id = $1', [req.session.userId]);
+        // Tareas completadas
+        const completadasRes = await db.query('SELECT COUNT(*) FROM tareas WHERE usuario_id = $1 AND completada = true', [req.session.userId]);
+        
+        // Tareas agrupadas por día (últimos 7 días)
+        const porDiaRes = await db.query(`
+            SELECT TO_CHAR(creado_en, 'DD/MM') as dia, COUNT(*) as cantidad 
+            FROM tareas 
+            WHERE usuario_id = $1 
+            GROUP BY dia 
+            ORDER BY MIN(creado_en) ASC 
+            LIMIT 7
+        `, [req.session.userId]);
+
+        res.status(200).json({
+            total: parseInt(totalRes.rows[0].count),
+            completadas: parseInt(completadasRes.rows[0].count),
+            porDia: porDiaRes.rows
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener estadísticas' });
+    }
+};

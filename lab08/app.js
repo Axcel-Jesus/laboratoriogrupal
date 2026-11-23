@@ -1,23 +1,22 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const path = require('path');
 
+// Importaciones de rutas
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const tareaRoutes = require('./routes/tareaRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SESSION_SECRET = process.env.SESSION_SECRET;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'clave_secreta_super_segura';
 
-if (!SESSION_SECRET) {
-    console.error('Falta SESSION_SECRET en .env');
-    process.exit(1);
-}
-
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Sesiones
 app.use(
     session({
         secret: SESSION_SECRET,
@@ -30,20 +29,21 @@ app.use(
     })
 );
 
-app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-});
+// Servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static('public'));
-
+// Rutas de la API
 app.use('/api/auth', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api/tareas', tareaRoutes);
+
+// ESTA ES LA LÍNEA QUE ARREGLA EL "NOT FOUND"
+// Redirige la raíz a tu página de login
 app.get('/', (req, res) => {
-    res.redirect('/login.html');
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+// Levantar el servidor
 app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+    console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });
