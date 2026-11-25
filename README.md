@@ -1,7 +1,9 @@
 Laboratorio IDweb:
-laboratorio A
+- laboratorio A
+
 Profesor:
-Carlo Corrales Delgado
+- Carlo Corrales Delgado
+
 Integrantes:
 - Cuno Lima Axcel Jesus
 - Huamaní Machaca Gael Alexander
